@@ -4,8 +4,10 @@ import { db } from "@/db";
 import { post, user } from "@/db/schema";
 import { desc, eq } from "drizzle-orm";
 import { postFieldsWithAuthor, PostWithAuthor } from "./type";
+import { unstable_noStore } from "next/cache";
 
 export async function getPostList(): Promise<PostWithAuthor[]> {
+  unstable_noStore();
   try {
     const data = await db
       .select(postFieldsWithAuthor)
