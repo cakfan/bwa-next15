@@ -6,6 +6,7 @@ import {
 } from "@/app/(routes)/add-post/zod-post";
 import { db } from "@/db";
 import { post } from "@/db/schema";
+import { getMe } from "../user";
 
 export async function addPost(data: insertPostType): Promise<{
   success: boolean;
@@ -13,7 +14,11 @@ export async function addPost(data: insertPostType): Promise<{
   message?: string;
 }> {
   try {
-    const [add] = await db.insert(post).values(data).returning();
+    const me = await getMe();
+    const [add] = await db
+      .insert(post)
+      .values({ ...data, author: me?.id })
+      .returning();
     return { success: true, data: add };
   } catch (error) {
     console.error("Add Post:", error);

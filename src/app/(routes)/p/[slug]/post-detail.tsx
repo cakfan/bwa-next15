@@ -27,7 +27,8 @@ const PostDetail = async ({ slug }: { slug: string }) => {
 
       {/* Meta */}
       <div className="text-muted-foreground text-sm">
-        <span>{new Date(post.createdAt!).toLocaleDateString()}</span>
+        <span>{new Date(post.createdAt!).toLocaleDateString() + " "}</span>
+        &mdash; <span>{post.author?.name}</span>
       </div>
 
       {/* Content */}

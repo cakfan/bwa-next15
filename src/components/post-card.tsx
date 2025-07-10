@@ -1,6 +1,6 @@
-import { selectPostType } from "@/app/(routes)/add-post/zod-post";
 import Link from "next/link";
 import Image from "next/image";
+import { PostWithAuthor } from "@/actions/post/type";
 
 const PostCard = ({
   title,
@@ -8,7 +8,8 @@ const PostCard = ({
   poster,
   content,
   createdAt,
-}: selectPostType) => {
+  author,
+}: PostWithAuthor) => {
   return (
     <Link
       href={`/p/${slug}`}
@@ -33,7 +34,8 @@ const PostCard = ({
         </h3>
         <p className="text-muted-foreground line-clamp-2 text-sm">{content}</p>
         <p className="text-muted-foreground text-xs">
-          {new Date(createdAt!).toLocaleDateString()}
+          {new Date(createdAt!).toLocaleDateString()} &mdash;{" "}
+          {author?.name ?? "NA"}
         </p>
       </div>
     </Link>

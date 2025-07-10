@@ -1,6 +1,7 @@
 import { boolean, text, timestamp } from "drizzle-orm/pg-core";
-import { gender, dbSchema, role } from ".";
+import { gender, dbSchema, role, post } from ".";
 import z from "zod";
+import { relations } from "drizzle-orm";
 
 export const user = dbSchema.table("user", {
   id: text("id").primaryKey(),
@@ -17,6 +18,10 @@ export const user = dbSchema.table("user", {
     .defaultNow()
     .$onUpdate(() => new Date()),
 });
+
+export const userRelations = relations(user, ({ many }) => ({
+  posts: many(post),
+}));
 
 export type UserType = typeof user.$inferSelect;
 
