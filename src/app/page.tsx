@@ -1,12 +1,11 @@
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import Image from "next/image";
-import Link from "next/link";
-import SignOutButton from "../(auth)/components/button-signout";
 import { getMe } from "@/actions/user";
+import { redirect } from "next/navigation";
 
 export default async function Home() {
   const me = await getMe();
+
+  if (me) redirect("/home");
 
   return (
     <div className="grid min-h-screen grid-rows-[20px_1fr_20px] items-center justify-items-center gap-16 p-8 pb-20 font-[family-name:var(--font-geist-sans)] sm:p-20">
@@ -32,7 +31,7 @@ export default async function Home() {
 
         <div className="flex flex-col items-center gap-4 sm:flex-row">
           <a
-            className="flex h-10 items-center justify-center gap-2 rounded-full border border-solid border-transparent bg-foreground px-4 text-sm text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] sm:h-12 sm:px-5 sm:text-base"
+            className="bg-foreground text-background flex h-10 items-center justify-center gap-2 rounded-full border border-solid border-transparent px-4 text-sm transition-colors hover:bg-[#383838] sm:h-12 sm:px-5 sm:text-base dark:hover:bg-[#ccc]"
             href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
             target="_blank"
             rel="noopener noreferrer"
@@ -47,7 +46,7 @@ export default async function Home() {
             Deploy now
           </a>
           <a
-            className="flex h-10 items-center justify-center rounded-full border border-solid border-black/[.08] px-4 text-sm transition-colors hover:border-transparent hover:bg-[#f2f2f2] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] sm:h-12 sm:min-w-44 sm:px-5 sm:text-base"
+            className="flex h-10 items-center justify-center rounded-full border border-solid border-black/[.08] px-4 text-sm transition-colors hover:border-transparent hover:bg-[#f2f2f2] sm:h-12 sm:min-w-44 sm:px-5 sm:text-base dark:border-white/[.145] dark:hover:bg-[#1a1a1a]"
             href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
             target="_blank"
             rel="noopener noreferrer"
@@ -55,20 +54,6 @@ export default async function Home() {
             Read our docs
           </a>
         </div>
-        {me ? (
-          <div className="flex w-full flex-col gap-5">
-            <h2>Hi, {me.name}</h2>
-            <p>{me.email}</p>
-            <SignOutButton />
-          </div>
-        ) : (
-          <Link
-            href={"/signin"}
-            className={cn(buttonVariants({ variant: "default" }))}
-          >
-            Sign In
-          </Link>
-        )}
       </main>
       <footer className="row-start-3 flex flex-wrap items-center justify-center gap-6">
         <a

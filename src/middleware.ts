@@ -33,7 +33,7 @@ export async function middleware(request: NextRequest) {
   }
 
   if (!session && !isPublicRoute) {
-    return NextResponse.redirect(new URL("/login", request.url));
+    return NextResponse.redirect(new URL(authRoutes[0], request.url));
   }
 
   return NextResponse.next();
