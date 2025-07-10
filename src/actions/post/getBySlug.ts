@@ -12,6 +12,7 @@ export async function getPostBySlug(
     const [data] = await db.select().from(post).where(eq(post.slug, slug));
     return data;
   } catch (error) {
+    console.error(error);
     return null;
   }
 }

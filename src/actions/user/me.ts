@@ -1,9 +1,7 @@
 "use server";
 
-import { db } from "@/db";
-import { user, UserType } from "@/db/schema";
+import { UserType } from "@/db/schema";
 import { auth } from "@/lib/auth";
-import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 
 export async function getMe(): Promise<Partial<UserType> | null | undefined> {

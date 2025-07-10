@@ -36,7 +36,6 @@ const AddPostForm = () => {
   });
 
   function onSubmit(data: insertPostType) {
-    console.log("data:", data);
     startTransition(async () => {
       const { success, message } = await addPost(data);
 
