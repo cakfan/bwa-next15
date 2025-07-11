@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio --port 5555 --verbose"
+    "db:studio": "drizzle-kit studio --port 5555 --verbose",
+    "dev:docker": "docker compose -f docker-compose.dev.yml up --build",
+    "prod:docker": "docker compose -f docker-compose.prod.yml up --build -d"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
