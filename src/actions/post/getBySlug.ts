@@ -12,7 +12,7 @@ export async function getPostBySlug(
     const [data] = await db
       .select(postFieldsWithAuthor)
       .from(post)
-      .leftJoin(user, eq(post.author, user.id))
+      .leftJoin(user, eq(post.authorId, user.id))
       .where(eq(post.slug, slug));
     return data;
   } catch (error) {
