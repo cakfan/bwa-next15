@@ -35,6 +35,7 @@ export default function FilterSidebar({
   const [rating, setRating] = useState("");
   const [category, setCategory] = useState<string[]>([]);
 
+  // Inisialisasi state dari query param
   useEffect(() => {
     const countryParam = searchParams.get("country") || "";
     const ageRatingParam = searchParams.get("ageRating") || "";
@@ -47,36 +48,17 @@ export default function FilterSidebar({
     setCategory(categoryParam ? categoryParam.split(",").filter(Boolean) : []);
   }, [searchParams]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const params = new URLSearchParams(searchParams.toString());
+  // Trigger perubahan URL saat state filter berubah
+  useEffect(() => {
+    const params = new URLSearchParams();
 
     if (country) params.set("country", country);
-    else params.delete("country");
-
     if (ageRating) params.set("ageRating", ageRating);
-    else params.delete("ageRating");
-
     if (rating) params.set("rating", rating);
-    else params.delete("rating");
-
-    if (category.length > 0) {
-      params.set("category", category.join(","));
-    } else {
-      params.delete("category");
-    }
+    if (category.length > 0) params.set("category", category.join(","));
 
     router.push(`${pathname}?${params.toString()}`);
-  };
-
-  const handleReset = () => {
-    setCountry("");
-    setAgeRating("");
-    setRating("");
-    setCategory([]);
-    router.push(pathname);
-  };
+  }, [country, ageRating, rating, category, pathname, router]);
 
   const handleCategoryChange = (slug: string, checked: boolean) => {
     setCategory((prev) =>
@@ -84,11 +66,16 @@ export default function FilterSidebar({
     );
   };
 
+  const handleReset = () => {
+    setCountry("");
+    setAgeRating("");
+    setRating("");
+    setCategory([]);
+    router.push(pathname); // Clear query params
+  };
+
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="border-border w-64 space-y-6 border-r p-4"
-    >
+    <div className="border-border w-64 space-y-6 border-r p-4">
       {/* Country */}
       <div>
         <Label>Country</Label>
@@ -174,11 +161,8 @@ export default function FilterSidebar({
         </RadioGroup>
       </div>
 
-      {/* Buttons */}
-      <div className="flex flex-col gap-2">
-        <Button type="submit" className="w-full">
-          Apply Filters
-        </Button>
+      {/* Reset Button */}
+      <div>
         <Button
           type="button"
           variant="destructive"
@@ -188,6 +172,6 @@ export default function FilterSidebar({
           Reset
         </Button>
       </div>
-    </form>
+    </div>
   );
 }
