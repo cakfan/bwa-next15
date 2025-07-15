@@ -17,7 +17,7 @@ export async function addPost(data: insertPostType): Promise<{
     const me = await getMe();
     const [add] = await db
       .insert(post)
-      .values({ ...data, author: me?.id })
+      .values({ ...data, authorId: me?.id })
       .returning();
     return { success: true, data: add };
   } catch (error) {
