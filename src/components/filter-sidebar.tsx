@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Star } from "lucide-react";
 
@@ -30,15 +30,22 @@ export default function FilterSidebar({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const [country, setCountry] = useState(searchParams.get("country") || "");
-  const [ageRating, setAgeRating] = useState(
-    searchParams.get("ageRating") || "",
-  );
-  const [rating, setRating] = useState(searchParams.get("rating") || "");
+  const [country, setCountry] = useState("");
+  const [ageRating, setAgeRating] = useState("");
+  const [rating, setRating] = useState("");
+  const [category, setCategory] = useState<string[]>([]);
 
-  const [category, setCategory] = useState<string[]>(
-    searchParams.get("category")?.split(",").filter(Boolean) || [],
-  );
+  useEffect(() => {
+    const countryParam = searchParams.get("country") || "";
+    const ageRatingParam = searchParams.get("ageRating") || "";
+    const ratingParam = searchParams.get("rating") || "";
+    const categoryParam = searchParams.get("category");
+
+    setCountry(countryParam);
+    setAgeRating(ageRatingParam);
+    setRating(ratingParam);
+    setCategory(categoryParam ? categoryParam.split(",").filter(Boolean) : []);
+  }, [searchParams]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,7 +75,7 @@ export default function FilterSidebar({
     setAgeRating("");
     setRating("");
     setCategory([]);
-    router.push(pathname); // Reset query params
+    router.push(pathname);
   };
 
   const handleCategoryChange = (slug: string, checked: boolean) => {
@@ -140,7 +147,7 @@ export default function FilterSidebar({
         </Select>
       </div>
 
-      {/* Rating as Radio Group */}
+      {/* Min Rating */}
       <div>
         <Label>Min Rating</Label>
         <RadioGroup
@@ -151,9 +158,16 @@ export default function FilterSidebar({
           {[1, 2, 3, 4, 5].map((val) => (
             <div key={val} className="flex items-center space-x-2">
               <RadioGroupItem value={val.toString()} id={`rating-${val}`} />
-              <label htmlFor={`rating-${val}`} className="text-sm">
-                <Star className="h-5 w-5" />
-                {val} Star{val > 1 && "s"}
+              <label
+                htmlFor={`rating-${val}`}
+                className="flex items-center gap-1 text-sm"
+              >
+                {Array.from({ length: val }, (_, i) => (
+                  <Star
+                    key={i}
+                    className="h-4 w-4 fill-yellow-400 text-yellow-400"
+                  />
+                ))}
               </label>
             </div>
           ))}
