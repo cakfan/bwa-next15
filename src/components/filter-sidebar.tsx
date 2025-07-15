@@ -9,74 +9,62 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Star } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 interface FilterSidebarProps {
   countries: { id: string; code: string; name: string }[];
   categories: { id: string; slug: string; name: string }[];
   ageRatings: { id: string; code: string; description: string }[];
+  defaultCountry?: string;
+  defaultAgeRating?: string;
+  defaultRating?: string;
+  defaultCategory?: string[];
 }
 
 export default function FilterSidebar({
   countries,
   categories,
   ageRatings,
+  defaultCountry = "",
+  defaultAgeRating = "",
+  defaultRating = "",
+  defaultCategory = [],
 }: FilterSidebarProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
 
-  const [country, setCountry] = useState("");
-  const [ageRating, setAgeRating] = useState("");
-  const [rating, setRating] = useState("");
-  const [category, setCategory] = useState<string[]>([]);
+  const [country, setCountry] = useState(defaultCountry ?? null);
+  const [ageRating, setAgeRating] = useState(defaultAgeRating ?? null);
+  const [rating, setRating] = useState(defaultRating ?? null);
+  const [category, setCategory] = useState<string[]>(defaultCategory ?? null);
 
-  useEffect(() => {
-    const countryParam = searchParams.get("country") || "";
-    const ageRatingParam = searchParams.get("ageRating") || "";
-    const ratingParam = searchParams.get("rating") || "";
-    const categoryParam = searchParams.get("category");
+  const updateURL = (
+    next: {
+      country?: string;
+      ageRating?: string;
+      rating?: string;
+      category?: string[];
+    } = {},
+  ) => {
+    const params = new URLSearchParams();
 
-    setCountry(countryParam);
-    setAgeRating(ageRatingParam);
-    setRating(ratingParam);
-    setCategory(categoryParam ? categoryParam.split(",").filter(Boolean) : []);
-  }, [searchParams]);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const params = new URLSearchParams(searchParams.toString());
-
-    if (country) params.set("country", country);
-    else params.delete("country");
-
-    if (ageRating) params.set("ageRating", ageRating);
-    else params.delete("ageRating");
-
-    if (rating) params.set("rating", rating);
-    else params.delete("rating");
-
-    if (category.length > 0) {
-      params.set("category", category.join(","));
-    } else {
-      params.delete("category");
+    if (next.country) params.set("country", next.country);
+    if (next.ageRating) params.set("ageRating", next.ageRating);
+    if (next.rating) params.set("rating", next.rating);
+    if (next.category && next.category.length > 0) {
+      params.set("category", next.category.join(","));
     }
 
     router.push(`${pathname}?${params.toString()}`);
   };
 
-  const handleReset = () => {
-    setCountry("");
-    setAgeRating("");
-    setRating("");
-    setCategory([]);
-    router.push(pathname);
-  };
+  useEffect(() => {
+    updateURL({ country, ageRating, rating, category });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [country, ageRating, rating, category]);
 
   const handleCategoryChange = (slug: string, checked: boolean) => {
     setCategory((prev) =>
@@ -85,10 +73,7 @@ export default function FilterSidebar({
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="border-border w-64 space-y-6 border-r p-4"
-    >
+    <div className="border-border w-64 space-y-6 border-r p-4">
       {/* Country */}
       <div>
         <Label>Country</Label>
@@ -173,21 +158,6 @@ export default function FilterSidebar({
           ))}
         </RadioGroup>
       </div>
-
-      {/* Buttons */}
-      <div className="flex flex-col gap-2">
-        <Button type="submit" className="w-full">
-          Apply Filters
-        </Button>
-        <Button
-          type="button"
-          variant="destructive"
-          onClick={handleReset}
-          className="w-full"
-        >
-          Reset
-        </Button>
-      </div>
-    </form>
+    </div>
   );
 }

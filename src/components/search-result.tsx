@@ -44,6 +44,10 @@ const SearchResult: React.FC<SearchResultProps> = async ({
         countries={countries}
         categories={categories}
         ageRatings={ageRatings}
+        defaultCountry={country}
+        defaultAgeRating={ageRating}
+        defaultRating={rating}
+        defaultCategory={categorySlugs ?? []}
       />
 
       <div className="flex-1 p-6">
