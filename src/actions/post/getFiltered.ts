@@ -2,15 +2,13 @@ import { db } from "@/db";
 import {
   post,
   rating,
-  review,
-  user,
   category,
   ageRating,
   postToCategory,
   postToCountry,
   country,
 } from "@/db/schema";
-import { and, eq, ilike, sql } from "drizzle-orm";
+import { and, ilike, sql } from "drizzle-orm";
 
 type FilterOptions = {
   query?: string | null;

@@ -1,6 +1,6 @@
 import { text, uuid } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
-import { dbSchema, post, postToCountry } from ".";
+import { dbSchema, postToCountry } from ".";
 
 export const country = dbSchema.table("country", {
   id: uuid("id").primaryKey().defaultRandom(),
