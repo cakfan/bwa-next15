@@ -12,7 +12,7 @@ export async function getPostList(): Promise<PostWithAuthor[]> {
     const data = await db
       .select(postFieldsWithAuthor)
       .from(post)
-      .leftJoin(user, eq(post.author, user.id))
+      .leftJoin(user, eq(post.authorId, user.id))
       .orderBy(desc(post.createdAt));
 
     return data;
