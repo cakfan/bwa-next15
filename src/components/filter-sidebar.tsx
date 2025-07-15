@@ -9,69 +9,67 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Star } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 interface FilterSidebarProps {
   countries: { id: string; code: string; name: string }[];
   categories: { id: string; slug: string; name: string }[];
   ageRatings: { id: string; code: string; description: string }[];
+  defaultCountry?: string;
+  defaultAgeRating?: string;
+  defaultRating?: string;
+  defaultCategory?: string[];
 }
 
 export default function FilterSidebar({
   countries,
   categories,
   ageRatings,
+  defaultCountry = "",
+  defaultAgeRating = "",
+  defaultRating = "",
+  defaultCategory = [],
 }: FilterSidebarProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
 
-  const [country, setCountry] = useState("");
-  const [ageRating, setAgeRating] = useState("");
-  const [rating, setRating] = useState("");
-  const [category, setCategory] = useState<string[]>([]);
+  const [country, setCountry] = useState(defaultCountry ?? null);
+  const [ageRating, setAgeRating] = useState(defaultAgeRating ?? null);
+  const [rating, setRating] = useState(defaultRating ?? null);
+  const [category, setCategory] = useState<string[]>(defaultCategory ?? null);
 
-  // Inisialisasi state dari query param
-  useEffect(() => {
-    const countryParam = searchParams.get("country") || "";
-    const ageRatingParam = searchParams.get("ageRating") || "";
-    const ratingParam = searchParams.get("rating") || "";
-    const categoryParam = searchParams.get("category");
-
-    setCountry(countryParam);
-    setAgeRating(ageRatingParam);
-    setRating(ratingParam);
-    setCategory(categoryParam ? categoryParam.split(",").filter(Boolean) : []);
-  }, [searchParams]);
-
-  // Trigger perubahan URL saat state filter berubah
-  useEffect(() => {
+  const updateURL = (
+    next: {
+      country?: string;
+      ageRating?: string;
+      rating?: string;
+      category?: string[];
+    } = {},
+  ) => {
     const params = new URLSearchParams();
 
-    if (country) params.set("country", country);
-    if (ageRating) params.set("ageRating", ageRating);
-    if (rating) params.set("rating", rating);
-    if (category.length > 0) params.set("category", category.join(","));
+    if (next.country) params.set("country", next.country);
+    if (next.ageRating) params.set("ageRating", next.ageRating);
+    if (next.rating) params.set("rating", next.rating);
+    if (next.category && next.category.length > 0) {
+      params.set("category", next.category.join(","));
+    }
 
     router.push(`${pathname}?${params.toString()}`);
-  }, [country, ageRating, rating, category, pathname, router]);
+  };
+
+  useEffect(() => {
+    updateURL({ country, ageRating, rating, category });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [country, ageRating, rating, category]);
 
   const handleCategoryChange = (slug: string, checked: boolean) => {
     setCategory((prev) =>
       checked ? [...prev, slug] : prev.filter((s) => s !== slug),
     );
-  };
-
-  const handleReset = () => {
-    setCountry("");
-    setAgeRating("");
-    setRating("");
-    setCategory([]);
-    router.push(pathname); // Clear query params
   };
 
   return (
@@ -159,18 +157,6 @@ export default function FilterSidebar({
             </div>
           ))}
         </RadioGroup>
-      </div>
-
-      {/* Reset Button */}
-      <div>
-        <Button
-          type="button"
-          variant="destructive"
-          onClick={handleReset}
-          className="w-full"
-        >
-          Reset
-        </Button>
       </div>
     </div>
   );
