@@ -12,7 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Star } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface FilterSidebarProps {
   countries: { id: string; code: string; name: string }[];
@@ -36,34 +36,39 @@ export default function FilterSidebar({
   const router = useRouter();
   const pathname = usePathname();
 
-  const [country, setCountry] = useState(defaultCountry ?? null);
-  const [ageRating, setAgeRating] = useState(defaultAgeRating ?? null);
-  const [rating, setRating] = useState(defaultRating ?? null);
-  const [category, setCategory] = useState<string[]>(defaultCategory ?? null);
+  const [country, setCountry] = useState(defaultCountry);
+  const [ageRating, setAgeRating] = useState(defaultAgeRating);
+  const [rating, setRating] = useState(defaultRating);
+  const [category, setCategory] = useState<string[]>(defaultCategory);
 
-  const updateURL = (
-    next: {
-      country?: string;
-      ageRating?: string;
-      rating?: string;
-      category?: string[];
-    } = {},
-  ) => {
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+
+  const updateURL = () => {
     const params = new URLSearchParams();
 
-    if (next.country) params.set("country", next.country);
-    if (next.ageRating) params.set("ageRating", next.ageRating);
-    if (next.rating) params.set("rating", next.rating);
-    if (next.category && next.category.length > 0) {
-      params.set("category", next.category.join(","));
+    if (country) params.set("country", country);
+    if (ageRating) params.set("ageRating", ageRating);
+    if (rating) params.set("rating", rating);
+    if (category.length > 0) {
+      params.set("category", category.join(","));
     }
 
-    router.push(`${pathname}?${params.toString()}`);
+    const query = params.toString();
+    router.push(query ? `${pathname}?${query}` : pathname);
   };
 
   useEffect(() => {
-    updateURL({ country, ageRating, rating, category });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Clear previous timeout if still pending
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    // Set new timeout for debounce
+    debounceRef.current = setTimeout(() => {
+      updateURL();
+    }, 500); // delay 500ms
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
   }, [country, ageRating, rating, category]);
 
   const handleCategoryChange = (slug: string, checked: boolean) => {
